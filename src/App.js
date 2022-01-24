@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import './App.css';
 import CellBoard from './components/CellBoard/CellBoard';
 import initCells from './utils/initializer';
-import { startSimulation, pauseSimulation, setCells } from './redux/actions';
+import { startSimulation, pauseSimulation, stepSimulation, resetSimulation, setCells } from './redux/actions';
 
 function App() {
 
-    //const [cells, setCells] = useState(initCells(30, 30));
     const cells = useSelector(state => state.simulation && state.simulation.cells || []);
     const dispatch = useDispatch();
 
@@ -19,6 +18,14 @@ function App() {
         dispatch(pauseSimulation());
     }
 
+    const handleStepClick = () => {
+        dispatch(stepSimulation());
+    }
+
+    const handleResetClick = () => {
+        dispatch(resetSimulation());
+    }
+
     const handleSetCells = (cells) => {
         dispatch(setCells(cells));
     }
@@ -27,6 +34,8 @@ function App() {
         <div className="App">
             <button onClick={handleStartClick}>Start</button>
             <button onClick={handlePauseClick}>Pause</button>
+            <button onClick={handleStepClick}>{'>>'}</button>
+            <button onClick={handleResetClick}>Reset</button>
             <CellBoard setCells={handleSetCells} cells={cells} />
         </div>
     );

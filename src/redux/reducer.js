@@ -4,7 +4,8 @@ import initCells from '../utils/initializer';
 
 const simulationState = {
     cells: initCells(30, 30),
-    isPaused: false
+    isPaused: false,
+    isReset: true
 };
 
 const simulationReducer = (state = simulationState, action) => {
@@ -12,9 +13,11 @@ const simulationReducer = (state = simulationState, action) => {
         case actionTypes.SET_CELLS:
             return { ...state, cells: action.payload }
         case actionTypes.START_SIMULATION:
-            return { ...state, isPaused: false}
+            return { ...state, isPaused: false, isReset: false }
         case actionTypes.PAUSE_SIMULATION:
-            return { ...state, isPaused: true}
+            return { ...state, isPaused: true, isReset: false }
+        case actionTypes.RESET_SIMULATION:
+            return { ...state, isPaused: false, isReset: true }
         default: return state
     }
 }
