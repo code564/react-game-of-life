@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 import { actionTypes } from './actions';
-import initCells from '../utils/initializer';
+import initCells from '../simulation/initializer';
 
 const simulationState = {
     cells: initCells(30, 30),

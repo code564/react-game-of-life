@@ -1,6 +1,6 @@
 import background from 'redux-background';
-import getNextPopulation from '../utils/population';
-import initCells from '../utils/initializer';
+import getNextPopulation from '../simulation/population';
+import initCells from '../simulation/initializer';
 
 export const actionTypes = {
     SET_CELLS: "SET_CELLS",

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import './App.css';
 import CellBoard from './components/CellBoard/CellBoard';
-import initCells from './utils/initializer';
+import initCells from './simulation/initializer';
 import { startSimulation, pauseSimulation, stepSimulation, resetSimulation, setCells } from './redux/actions';
 
 function App() {
