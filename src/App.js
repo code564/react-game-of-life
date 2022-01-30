@@ -8,6 +8,7 @@ import { startSimulation, pauseSimulation, stepSimulation, resetSimulation, setC
 function App() {
 
     const cells = useSelector(state => state.simulation && state.simulation.cells || []);
+    const generationCount = useSelector(state => state.simulation && state.simulation.generationCount || 1);
     const dispatch = useDispatch();
 
     const handleStartClick = () => {
@@ -32,6 +33,7 @@ function App() {
 
     return (
         <div className="App">
+            <span>Generation: {generationCount}</span>
             <button onClick={handleStartClick}>Start</button>
             <button onClick={handlePauseClick}>Pause</button>
             <button onClick={handleStepClick}>{'>>'}</button>

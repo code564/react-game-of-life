@@ -4,9 +4,11 @@ import initCells from '../simulation/initializer';
 
 export const actionTypes = {
     SET_CELLS: "SET_CELLS",
+    SAVE_STARTING_CELLS: "SAVE_STARTING_CELLS",
     PAUSE_SIMULATION: "PAUSE_SIMULATION",
     START_SIMULATION: "START_SIMULATION",
-    RESET_SIMULATION: "RESET_SIMULATION"
+    RESET_SIMULATION: "RESET_SIMULATION",
+    SET_GENERATION_COUNT: "SET_GENERATION_COUNT"
 };
 
 const { actions: { startJob, stopJob } } = background;
@@ -14,11 +16,12 @@ const jobOptions = { interval: 1000, maxTimes: Infinity };
 
 const simulationJobWorker = (dispatch, getState, stepMode = false) => {
     const state = getState();
-    const { isPaused, isReset } = state.simulation;
+    const { isPaused, isReset, generationCount } = state.simulation;
     if ((isPaused && !stepMode) || isReset) return;
     const cells = state.simulation.cells;
     const nextCells = getNextPopulation(cells);
-    return dispatch(setCells(nextCells));
+    dispatch(setCells(nextCells));
+    dispatch({ type: actionTypes.SET_GENERATION_COUNT });
 }
 
 export const stepSimulation = () => (dispatch, getState) => {
@@ -26,9 +29,13 @@ export const stepSimulation = () => (dispatch, getState) => {
 }
 
 export const startSimulation = () => (dispatch, getState) => {
-    dispatch({
-        type: actionTypes.START_SIMULATION
+    const state = getState();
+    const { isReset, cells } = state.simulation;
+    if (isReset) dispatch({
+        type: actionTypes.SAVE_STARTING_CELLS,
+        payload: cells
     });
+    dispatch({ type: actionTypes.START_SIMULATION });
     dispatch(startJob('simulation', () => simulationJobWorker(dispatch, getState), jobOptions));
 }
 
@@ -39,12 +46,12 @@ export const pauseSimulation = () => (dispatch) => {
     dispatch(stopJob('simulation'));
 }
 
-export const resetSimulation = () => (dispatch) => {
-    dispatch({
-        type: actionTypes.RESET_SIMULATION
-    });
+export const resetSimulation = () => (dispatch, getState) => {
+    const state = getState();
+    const { lastStartingCells } = state.simulation;
+    dispatch({ type: actionTypes.RESET_SIMULATION });
     dispatch(stopJob('simulation'));
-    dispatch(setCells(initCells(30,30)));
+    dispatch(setCells( lastStartingCells.length && lastStartingCells || initCells(30,30) ));
 }
 
 export const setCells = (cells) => {
