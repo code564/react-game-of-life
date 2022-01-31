@@ -1,3 +1,13 @@
 .App {
   text-align: center;
 }
+
+.simulation-controls {
+  margin: 10px;
+}
+.simulation-title {
+  margin: 10px
+}
+.simulation-speed {
+  margin-top: 5px
+}

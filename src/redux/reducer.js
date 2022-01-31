@@ -7,7 +7,8 @@ const simulationState = {
     lastStartingCells: [],
     isPaused: false,
     isReset: true,
-    generationCount: 1
+    generationCount: 0,
+    speed: -1000
 };
 
 const simulationReducer = (state = simulationState, action) => {
@@ -23,7 +24,9 @@ const simulationReducer = (state = simulationState, action) => {
         case actionTypes.PAUSE_SIMULATION:
             return { ...state, isPaused: true, isReset: false }
         case actionTypes.RESET_SIMULATION:
-            return { ...state, isPaused: false, isReset: true, cells: state.lastStartingCells, generationCount: 1 }
+            return { ...state, isPaused: false, isReset: true, cells: state.lastStartingCells, generationCount: 0 }
+        case actionTypes.SET_SIMULATION_SPEED:
+            return { ...state, speed: action.payload }
         default: return state
     }
 }
