@@ -8,11 +8,12 @@ export const actionTypes = {
     PAUSE_SIMULATION: "PAUSE_SIMULATION",
     START_SIMULATION: "START_SIMULATION",
     RESET_SIMULATION: "RESET_SIMULATION",
-    SET_GENERATION_COUNT: "SET_GENERATION_COUNT"
+    SET_GENERATION_COUNT: "SET_GENERATION_COUNT",
+    SET_SIMULATION_SPEED: "SET_SIMULATION_SPEED"
 };
 
 const { actions: { startJob, stopJob } } = background;
-const jobOptions = { interval: 1000, maxTimes: Infinity };
+const jobOptions = { maxTimes: Infinity };
 
 const simulationJobWorker = (dispatch, getState, stepMode = false) => {
     const state = getState();
@@ -30,13 +31,13 @@ export const stepSimulation = () => (dispatch, getState) => {
 
 export const startSimulation = () => (dispatch, getState) => {
     const state = getState();
-    const { isReset, cells } = state.simulation;
+    const { isReset, cells, speed } = state.simulation;
     if (isReset) dispatch({
         type: actionTypes.SAVE_STARTING_CELLS,
         payload: cells
     });
     dispatch({ type: actionTypes.START_SIMULATION });
-    dispatch(startJob('simulation', () => simulationJobWorker(dispatch, getState), jobOptions));
+    dispatch(startJob('simulation', () => simulationJobWorker(dispatch, getState), { ...jobOptions, interval: Math.abs(speed) }));
 }
 
 export const pauseSimulation = () => (dispatch) => {
@@ -54,9 +55,20 @@ export const resetSimulation = () => (dispatch, getState) => {
     dispatch(setCells( lastStartingCells.length && lastStartingCells || initCells(30,30) ));
 }
 
+export const clearBoard = () => (dispatch) => {
+    dispatch(setCells( initCells(30,30) ));
+}
+
 export const setCells = (cells) => {
     return {
         type: actionTypes.SET_CELLS,
         payload: cells
+    }
+}
+
+export const setSimulationSpeed = (ms) => {
+    return {
+        type: actionTypes.SET_SIMULATION_SPEED,
+        payload: ms
     }
 }

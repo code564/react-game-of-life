@@ -1,14 +1,41 @@
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import './App.css';
 import CellBoard from './components/CellBoard/CellBoard';
-import initCells from './simulation/initializer';
-import { startSimulation, pauseSimulation, stepSimulation, resetSimulation, setCells } from './redux/actions';
+import {
+    startSimulation,
+    pauseSimulation,
+    stepSimulation,
+    resetSimulation,
+    clearBoard,
+    setCells,
+    setSimulationSpeed
+} from './redux/actions';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Chip from '@mui/material/Chip';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ClearIcon from '@mui/icons-material/Clear';
+import StartPauseButton from './components/Control/StartPauseButton';
+import TooltippedButton from './components/Control/TooltippedButton';
+import Slider from '@mui/material/Slider';
+import Typography from '@mui/material/Typography';
+import { 
+    selectCells,
+    selectGenerationCount,
+    selectIsPaused,
+    selectIsReset,
+    selectSpeed
+ } from './redux/selector';
 
 function App() {
 
-    const cells = useSelector(state => state.simulation && state.simulation.cells || []);
-    const generationCount = useSelector(state => state.simulation && state.simulation.generationCount || 1);
+    const cells = useSelector(selectCells);
+    const generationCount = useSelector(selectGenerationCount);
+    const isPaused = useSelector(selectIsPaused);
+    const isReset = useSelector(selectIsReset);
+    const speed = useSelector(selectSpeed);
     const dispatch = useDispatch();
 
     const handleStartClick = () => {
@@ -27,19 +54,76 @@ function App() {
         dispatch(resetSimulation());
     }
 
+    const handleClearClick = () => {
+        dispatch(clearBoard());
+    }
+
     const handleSetCells = (cells) => {
         dispatch(setCells(cells));
     }
 
+    const handleSimulationChangeSpeed = (event, value) => {
+        dispatch(setSimulationSpeed(value));
+    }
+
+    const getPopulationCount = () => {
+        let populationCont = 0;
+        for (let row = 0; row < cells.length; row++) {
+            for (let col = 0; col < cells[row].length; col++) {
+                populationCont += (cells[row][col].alive ? 1 : 0);
+            }
+        }
+        return populationCont;
+    }
+
     return (
-        <div className="App">
-            <span>Generation: {generationCount}</span>
-            <button onClick={handleStartClick}>Start</button>
-            <button onClick={handlePauseClick}>Pause</button>
-            <button onClick={handleStepClick}>{'>>'}</button>
-            <button onClick={handleResetClick}>Reset</button>
-            <CellBoard setCells={handleSetCells} cells={cells} />
-        </div>
+        <Container maxWidth="md">
+            <Stack alignItems="center" className="simulation-title">
+                <Typography variant="h4" color="#1976D7" fontFamily="courier new" fontWeight="bold">{`<Conway's Game Of Life />`}</Typography>
+            </Stack>
+            <Stack alignItems="center" className="simulation-controls">
+                <Stack width={500} direction="row" spacing={2} justifyContent="space-between">
+                    <Chip label={`Generations: ${generationCount}`} />
+                    <Chip label={`Population: ${getPopulationCount()}`} />
+                    <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                        <StartPauseButton 
+                            handleStartClick={handleStartClick}
+                            handlePauseClick={handlePauseClick}
+                            isPaused={isPaused}
+                            isReset={isReset}
+                        />
+                        <TooltippedButton onClick={handleStepClick} tooltip={"Next generation"} disabled={!isPaused}><SkipNextIcon /></TooltippedButton>
+                        <TooltippedButton onClick={handleResetClick} tooltip={"Restart simulation"}><RestartAltIcon /></TooltippedButton>
+                    </ButtonGroup>
+                    <TooltippedButton
+                        variant="contained"
+                        onClick={handleClearClick}
+                        tooltip={"Clear board"}
+                        disabled={!isReset}>
+                            <ClearIcon />
+                    </TooltippedButton>
+                </Stack>
+                <Stack width={500} className="simulation-speed">
+                    <Slider
+                        disabled={!isPaused && !isReset}
+                        aria-label="Simulation speed (ms)"
+                        value={speed}
+                        onChange={handleSimulationChangeSpeed}
+                        getAriaValueText={(value) => `${value} ms`}
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={(value) => `${value} ms`}
+                        step={100}
+                        marks
+                        min={-1000}
+                        max={-100}
+                        scale={x => -x}
+                    />
+                </Stack>
+            </Stack>
+            <Stack alignItems="center">
+                <CellBoard setCells={handleSetCells} cells={cells} isReset={isReset} />
+            </Stack>
+        </Container>
     );
 }
 
