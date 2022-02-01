@@ -10,11 +10,10 @@ const CellBoard = (props) => {
         clickedCell.alive = !clickedCell.alive;
         cellsCopy[row][col] = clickedCell;
         setCells(cellsCopy);
-    }
+    };
 
     return (
         <div
-            disabled={true}
             style={{
                 display: "inline-grid",
                 gridTemplateColumns: `repeat(${cells[0].length}, 20px)`
@@ -22,7 +21,7 @@ const CellBoard = (props) => {
         >
             {cells.map((rows) => 
                 rows.map((cell) => {
-                    return <Cell onClick={() => handleCellClick(cell.row, cell.col)} cell={cell} />
+                    return <Cell key={`${cell.row}-${cell.col}`} onClick={() => handleCellClick(cell.row, cell.col)} cell={cell} />
                 })
             )}
         </div>
