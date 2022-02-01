@@ -8,4 +8,4 @@ export default (rows, cols) => {
         cells.push(cellRow);
     }
     return cells;
-}
+};

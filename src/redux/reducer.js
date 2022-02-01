@@ -29,7 +29,7 @@ const simulationReducer = (state = simulationState, action) => {
             return { ...state, speed: action.payload }
         default: return state
     }
-}
+};
 
 const rootReducer = combineReducers({
     simulation: simulationReducer

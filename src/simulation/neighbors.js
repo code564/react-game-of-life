@@ -21,4 +21,4 @@ export default (cell, cells, aliveOnly = true) => {
         else neighbors.push(cells[newRow][newCol]);
     }
     return aliveOnly ? neighbors.filter(n => n.alive) : neighbors;
-}
+};
