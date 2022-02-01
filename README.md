@@ -8,7 +8,7 @@
 
 ## Run app with react-scripts
 
-Minimum node version: 14.18.3
+Minimum Node version: 14.18.3
 
 `npm install`
 
