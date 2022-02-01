@@ -6,6 +6,7 @@ import {
     pauseSimulation,
     stepSimulation,
     resetSimulation,
+    clearBoard,
     setCells,
     setSimulationSpeed
 } from './redux/actions';
@@ -15,6 +16,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import Chip from '@mui/material/Chip';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ClearIcon from '@mui/icons-material/Clear';
 import StartPauseButton from './components/Control/StartPauseButton';
 import TooltippedButton from './components/Control/TooltippedButton';
 import Slider from '@mui/material/Slider';
@@ -52,12 +54,26 @@ function App() {
         dispatch(resetSimulation());
     }
 
+    const handleClearClick = () => {
+        dispatch(clearBoard());
+    }
+
     const handleSetCells = (cells) => {
         dispatch(setCells(cells));
     }
 
     const handleSimulationChangeSpeed = (event, value) => {
         dispatch(setSimulationSpeed(value));
+    }
+
+    const getPopulationCount = () => {
+        let populationCont = 0;
+        for (let row = 0; row < cells.length; row++) {
+            for (let col = 0; col < cells[row].length; col++) {
+                populationCont += (cells[row][col].alive ? 1 : 0);
+            }
+        }
+        return populationCont;
     }
 
     return (
@@ -68,6 +84,7 @@ function App() {
             <Stack alignItems="center" className="simulation-controls">
                 <Stack width={500} direction="row" spacing={2} justifyContent="space-between">
                     <Chip label={`Generations: ${generationCount}`} />
+                    <Chip label={`Population: ${getPopulationCount()}`} />
                     <ButtonGroup variant="contained" aria-label="outlined primary button group">
                         <StartPauseButton 
                             handleStartClick={handleStartClick}
@@ -78,9 +95,17 @@ function App() {
                         <TooltippedButton onClick={handleStepClick} tooltip={"Next generation"} disabled={!isPaused}><SkipNextIcon /></TooltippedButton>
                         <TooltippedButton onClick={handleResetClick} tooltip={"Restart simulation"}><RestartAltIcon /></TooltippedButton>
                     </ButtonGroup>
+                    <TooltippedButton
+                        variant="contained"
+                        onClick={handleClearClick}
+                        tooltip={"Clear board"}
+                        disabled={!isReset}>
+                            <ClearIcon />
+                    </TooltippedButton>
                 </Stack>
                 <Stack width={500} className="simulation-speed">
                     <Slider
+                        disabled={!isPaused && !isReset}
                         aria-label="Simulation speed (ms)"
                         value={speed}
                         onChange={handleSimulationChangeSpeed}

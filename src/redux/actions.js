@@ -55,6 +55,10 @@ export const resetSimulation = () => (dispatch, getState) => {
     dispatch(setCells( lastStartingCells.length && lastStartingCells || initCells(30,30) ));
 }
 
+export const clearBoard = () => (dispatch) => {
+    dispatch(setCells( initCells(30,30) ));
+}
+
 export const setCells = (cells) => {
     return {
         type: actionTypes.SET_CELLS,
